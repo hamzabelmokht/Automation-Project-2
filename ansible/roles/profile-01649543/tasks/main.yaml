@@ -1,0 +1,10 @@
+- name: Update /etc/profile
+  hosts: all
+  become: true
+  tasks:
+    - name: Append lines to /etc/profile
+      lineinfile:
+        path: /etc/profile
+        line: |
+          # Test block added by Ansible......admin
+          export TMOUT=1500

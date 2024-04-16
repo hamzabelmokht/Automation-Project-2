@@ -1,0 +1,35 @@
+- name: Configure load-balanced website
+  hosts: all
+  become: true
+  vars:
+    web_files:
+      - name: vm1.html
+        content: "{{ ansible_fqdn }}"
+      - name: vm2.html
+        content: "{{ ansible_fqdn }}"
+      - name: vm3.html
+        content: "{{ ansible_fqdn }}"
+  tasks:
+    - name: Install Apache web server
+      package:
+        name: apache2
+        state: present
+    - name: Create files with FQDN
+      template:
+        src: "{{ item.name }}"
+        dest: "/tmp/{{ item.name }}"
+      loop: "{{ web_files }}"
+    - name: Copy files to nodes
+      copy:
+        src: "/tmp/{{ item.name }}"
+        dest: "/var/www/html/index.html"
+      loop: "{{ web_files }}"
+    - name: Set permissions on files
+      file:
+        path: "/var/www/html/index.html"
+        mode: "0444"
+    - name: Start Apache service
+      service:
+        name: apache2
+        state: started
+        enabled: yes

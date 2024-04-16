@@ -1,0 +1,41 @@
+- name: Partition and mount data disks
+  hosts: all
+  become: true
+  vars:
+    disk1_size: "4G"
+    disk2_size: "5G"
+  tasks:
+    - name: Partition data disk 1
+      parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+        part_end: "{{ disk1_size }}"
+      register: disk1_result
+    - name: Create XFS filesystem on partition 1
+      filesystem:
+        fstype: xfs
+        dev: "/dev/sdb1"
+    - name: Mount partition 1
+      mount:
+        path: /part1
+        src: "/dev/sdb1"
+        fstype: xfs
+        state: mounted
+    - name: Partition data disk 2
+      parted:
+        device: /dev/sdc
+        number: 1
+        state: present
+        part_end: "{{ disk2_size }}"
+      register: disk2_result
+    - name: Create EXT4 filesystem on partition 2
+      filesystem:
+        fstype: ext4
+        dev: "/dev/sdc1"
+    - name: Mount partition 2
+      mount:
+        path: /part2
+        src: "/dev/sdc1"
+        fstype: ext4
+        state: mounted

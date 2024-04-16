@@ -1,0 +1,8 @@
+- name: HumberID Playbook
+  hosts: all
+  become: true
+  roles:
+    - datadisk-HumberID
+    - profile-HumberID
+    - user-HumberID
+    - webserver-HumberID

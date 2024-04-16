@@ -28,6 +28,12 @@ resource "azurerm_linux_virtual_machine" "vmlinux" {
     provisioner "local-exec" {
       command = "echo ${self.name} ${self.private_ip_address} ${self.public_ip_address} ${self.dns_label} >> vm_info.txt"
     }
+
+    provisioner "remote-exec" {
+      inline = [
+        "ansible-playbook 01649543-playbook.yml"
+      ]
+    }
   }
 
   dynamic "extension" {
